@@ -4,9 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "email-agent-env"
-version = "0.1.1"
+version = "0.1.2"
 description = "Email Agent Environment for OpenEnv"
-readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "fastapi",
@@ -16,9 +15,5 @@ dependencies = [
     "openai"
 ]
 
-[tool.setuptools]
-include-package-data = true
-
 [tool.setuptools.packages.find]
-where = ["."]
 include = ["env*"]
