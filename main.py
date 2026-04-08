@@ -8,13 +8,25 @@ env = EmailEnv()
 def home():
     return {"message": "Running"}
 
-@app.get("/reset")
+
+@app.post("/reset")
 def reset():
+    return env.reset()
+
+@app.get("/reset")
+def reset_get():
     return env.reset()
 
 @app.post("/step")
 def step(action: Action):
-    return env.step(action)
+    state, reward, done, info = env.step(action)
+
+    return {
+        "state": state,
+        "reward": reward,
+        "done": done,
+        "info": info
+    }
 
 @app.get("/state")
 def state():
