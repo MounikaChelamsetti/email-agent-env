@@ -1,0 +1,15 @@
+version = 1
+requires-python = ">=3.10"
+
+[[package]]
+name = "email-agent-env"
+version = "0.1.2"
+source = { editable = "." }
+dependencies = [
+    { name = "fastapi" },
+    { name = "uvicorn" },
+    { name = "pydantic" },
+    { name = "requests" },
+    { name = "openai" },
+    { name = "openenv-core" },
+]
