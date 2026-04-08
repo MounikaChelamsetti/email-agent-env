@@ -2,11 +2,24 @@ import requests
 
 BASE = "http://127.0.0.1:8000"
 
-print("[START]")
+def log_start():
+    print("[START] task=email env=email-env model=baseline", flush=True)
+
+def log_step(step, action, reward, done, error=None):
+    error_val = error if error else "null"
+    print(f"[STEP] step={step} action={action} reward={reward:.2f} done={str(done).lower()} error={error_val}", flush=True)
+
+def log_end(success, steps, score, rewards):
+    rewards_str = ",".join([f"{r:.2f}" for r in rewards])
+    print(f"[END] success={str(success).lower()} steps={steps} score={score:.3f} rewards={rewards_str}", flush=True)
+
+
+log_start()
 
 obs = requests.get(f"{BASE}/reset").json()
 
-actions = []
+rewards = []
+done = False
 
 for i in range(5):
 
@@ -19,11 +32,16 @@ for i in range(5):
 
     res = requests.post(f"{BASE}/step", json=action).json()
 
-    print("[STEP]")
-    print(f"action: {action}")
-    print(f"reward: {res[1]['score']}")
+    reward = res[1]
+    done = res[2]
 
-    actions.append(action)
+    rewards.append(reward)
 
-print("[END]")
-print("final_score: 1.0")
+    log_step(i, action["action_type"], reward, done)
+
+    if done:
+        break
+
+final_score = sum(rewards) / len(rewards)
+
+log_end(True, len(rewards), final_score, rewards)
