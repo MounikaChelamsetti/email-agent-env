@@ -1,0 +1,9 @@
+[project]
+name = "email-agent-env"
+version = "0.1.0"
+description = "Email Agent Environment for OpenEnv"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic"
+]
