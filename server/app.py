@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from env.environment import EmailEnv, Action
 
@@ -31,3 +32,11 @@ def step(action: Action):
 @app.get("/state")
 def state():
     return env.state()
+
+
+def main():
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+if __name__ == "__main__":
+    main()
