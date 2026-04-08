@@ -1,0 +1,7 @@
+name: email-env
+description: Elite email assistant simulation
+
+tasks:
+  - easy
+  - medium
+  - hard
