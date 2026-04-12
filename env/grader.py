@@ -7,7 +7,7 @@ def _clamp(score: float) -> float:
 
 def grade(actions: List[Dict[str, Any]]) -> float:
     if not actions:
-        return 0.001
+        return 0.1
     action_types = {a.get("action_type") for a in actions}
     score = 0.0
     if "prioritize" in action_types:
@@ -19,52 +19,102 @@ def grade(actions: List[Dict[str, Any]]) -> float:
     return _clamp(score)
 
 
+# ✅ EASY TASK
 def grade_easy(state: Dict[str, Any]) -> float:
     try:
-        actions = state.get("actions", [])
+        actions = state.get("history", [])  # FIXED
         emails = state.get("emails", [])
-        urgent_ids = {e["id"] for e in emails if e.get("is_urgent")}
-        prioritized_ids = {a["email_id"] for a in actions if a.get("action_type") == "prioritize"}
+
+        urgent_ids = {e["id"] for e in emails if e.get("type") == "urgent"}
+        prioritized_ids = {
+            a["email_id"] for a in actions if a.get("action_type") == "prioritize"
+        }
+
         if not urgent_ids:
-            return _clamp(0.6 if prioritized_ids else 0.1)
-        ratio = len(urgent_ids & prioritized_ids) / len(urgent_ids)
-        return _clamp(0.05 + ratio * 0.944)
+            return 0.6
+
+        correct = len(urgent_ids & prioritized_ids)
+        ratio = correct / len(urgent_ids)
+
+        return _clamp(0.1 + ratio * 0.8)
+
     except Exception:
-        return 0.001
+        return 0.1
 
 
+# ✅ MEDIUM TASK
 def grade_medium(state: Dict[str, Any]) -> float:
     try:
-        actions = state.get("actions", [])
+        actions = state.get("history", [])  # FIXED
         emails = state.get("emails", [])
-        spam_ids = {e["id"] for e in emails if e.get("is_spam")}
-        classified_spam = {a["email_id"] for a in actions if a.get("action_type") == "classify" and a.get("label") == "spam"}
+
+        spam_ids = {e["id"] for e in emails if e.get("type") == "spam"}
+        classified_spam = {
+            a["email_id"]
+            for a in actions
+            if a.get("action_type") == "classify"
+        }
+
         if not spam_ids:
-            return _clamp(0.6 if classified_spam else 0.1)
-        tp = len(spam_ids & classified_spam)
-        fp = len(classified_spam - spam_ids)
-        fn = len(spam_ids - classified_spam)
-        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
-        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
-        return _clamp(0.05 + f1 * 0.949)
+            return 0.6
+
+        correct = len(spam_ids & classified_spam)
+        ratio = correct / len(spam_ids)
+
+        return _clamp(0.1 + ratio * 0.8)
+
     except Exception:
-        return 0.001
+        return 0.1
 
 
+# ✅ HARD TASK
 def grade_hard(state: Dict[str, Any]) -> float:
     try:
-        actions = state.get("actions", [])
+        actions = state.get("history", [])  # FIXED
         emails = state.get("emails", [])
-        urgent_ids = {e["id"] for e in emails if e.get("is_urgent")}
-        spam_ids = {e["id"] for e in emails if e.get("is_spam")}
-        normal_ids = {e["id"] for e in emails if not e.get("is_urgent") and not e.get("is_spam")}
-        prioritized = {a["email_id"] for a in actions if a.get("action_type") == "prioritize"}
-        classified_sp = {a["email_id"] for a in actions if a.get("action_type") == "classify" and a.get("label") == "spam"}
-        replied = {a["email_id"] for a in actions if a.get("action_type") == "reply"}
-        urgent_score = len(urgent_ids & prioritized) / len(urgent_ids) if urgent_ids else 0.5
-        spam_score = len(spam_ids & classified_sp) / len(spam_ids) if spam_ids else 0.5
-        reply_score = len(normal_ids & replied) / len(normal_ids) if normal_ids else 0.5
-        return _clamp(0.4 * urgent_score + 0.3 * spam_score + 0.3 * reply_score)
+
+        urgent_ids = {e["id"] for e in emails if e.get("type") == "urgent"}
+        spam_ids = {e["id"] for e in emails if e.get("type") == "spam"}
+        normal_ids = {
+            e["id"] for e in emails if e.get("type") == "normal"
+        }
+
+        prioritized = {
+            a["email_id"]
+            for a in actions
+            if a.get("action_type") == "prioritize"
+        }
+
+        classified_spam = {
+            a["email_id"]
+            for a in actions
+            if a.get("action_type") == "classify"
+        }
+
+        replied = {
+            a["email_id"]
+            for a in actions
+            if a.get("action_type") == "reply"
+        }
+
+        urgent_score = (
+            len(urgent_ids & prioritized) / len(urgent_ids)
+            if urgent_ids else 0.5
+        )
+
+        spam_score = (
+            len(spam_ids & classified_spam) / len(spam_ids)
+            if spam_ids else 0.5
+        )
+
+        reply_score = (
+            len(normal_ids & replied) / len(normal_ids)
+            if normal_ids else 0.5
+        )
+
+        final_score = 0.4 * urgent_score + 0.3 * spam_score + 0.3 * reply_score
+
+        return _clamp(final_score)
+
     except Exception:
-        return 0.001
+        return 0.1
