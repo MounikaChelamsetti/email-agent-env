@@ -88,7 +88,7 @@ def grader(req: GraderRequest):
         raw["actions"] = raw.get("actions") or raw["history"]
 
     score = fn(raw if isinstance(raw, dict) else {})
-    score = max(0.001, min(0.999, float(score)))
+    score = max(0.01, min(0.99, float(score)))
 
     return {"task_id": req.task_id, "score": float(score)}
 
@@ -109,7 +109,7 @@ def grade_task(task_id: str, state: Dict[str, Any]):
     
     # Validate score is strictly between 0 and 1
     if not (0 < score < 1):
-        score = max(0.001, min(0.999, float(score)))
+        score = max(0.01, min(0.99, float(score)))
     
     return {"task_id": task_id, "score": float(score)}
 

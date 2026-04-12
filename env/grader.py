@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 
 def _clamp(score: float) -> float:
-    return max(0.001, min(0.999, float(score)))
+    return max(0.01, min(0.99, float(score)))
 
 
 def _get_actions(state: Dict[str, Any]) -> List[Dict[str, Any]]:
