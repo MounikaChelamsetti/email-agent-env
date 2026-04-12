@@ -68,13 +68,12 @@ def grader(req: GraderRequest):
     fn = GRADERS.get(req.task_id)
     if fn is None:
         return {"error": f"Unknown task_id: {req.task_id}", "score": 0.001}
-    
-    # Get state and normalize: graders expect "actions" key but env uses "history"
+
     raw = req.state or {}
     if not raw:
         raw = env.state()
     if isinstance(raw, dict) and "history" in raw and "actions" not in raw:
         raw["actions"] = raw["history"]
-    
+
     score = fn(raw if isinstance(raw, dict) else {})
     return {"task_id": req.task_id, "score": float(score)}
