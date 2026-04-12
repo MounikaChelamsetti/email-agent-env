@@ -1,18 +1,26 @@
 name: email-agent-env
 description: Elite email assistant simulation
 
+version: 0.1.0
+
+environment:
+  entry_point: main:app
+
 tasks:
   - id: easy
-    name: Urgent Email Prioritization
-    description: Identify and prioritize the urgent email.
-    grader: env.grader.grade_easy
+    description: Prioritize urgent emails
+    grader:
+      type: python
+      entry_point: env.grader:grade_easy
 
   - id: medium
-    name: Spam Detection
-    description: Classify spam correctly without false positives.
-    grader: env.grader.grade_medium
+    description: Classify spam emails
+    grader:
+      type: python
+      entry_point: env.grader:grade_medium
 
   - id: hard
-    name: Mixed Inbox Management
-    description: Prioritize urgent, classify spam, reply to normal.
-    grader: env.grader.grade_hard
+    description: Handle mixed inbox
+    grader:
+      type: python
+      entry_point: env.grader:grade_hard
