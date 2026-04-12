@@ -4,41 +4,35 @@ from typing import Any, Dict, Optional
 
 from env.environment import EmailEnv, Action
 from env.grader import grade_easy, grade_medium, grade_hard
+from env.generator import generate_emails
 
 app = FastAPI()
 env = EmailEnv()
-
 
 @app.get("/")
 def home():
     return {"message": "Running"}
 
-
 @app.get("/health")
 def health():
     return {"status": "healthy", "service": "email-agent-env"}
-
 
 @app.post("/reset")
 def reset():
     return env.reset()
 
-
 @app.get("/reset")
 def reset_get():
     return env.reset()
-
 
 @app.post("/step")
 def step(action: Action):
     state, reward, done, info = env.step(action)
     return {"state": state, "reward": reward, "done": done, "info": info}
 
-
 @app.get("/state")
 def get_state():
     return env.state()
-
 
 @app.get("/tasks")
 def list_tasks():
@@ -48,30 +42,30 @@ def list_tasks():
             "name": "Urgent Email Prioritization",
             "description": "Identify and prioritize the urgent email.",
             "grader": "grade_easy"
+            "grader_fn": "grade_easy"
         },
         {
             "id": "medium",
             "name": "Spam Detection",
             "description": "Classify spam correctly without false positives.",
             "grader": "grade_medium"
+            "grader_fn": "grade_medium"
         },
         {
             "id": "hard",
             "name": "Mixed Inbox Management",
             "description": "Prioritize urgent, classify spam, reply to normal.",
             "grader": "grade_hard"
+            "grader_fn": "grade_hard"
         },
     ]}
 
-
 GRADERS = {"easy": grade_easy, "medium": grade_medium, "hard": grade_hard}
-
 
 class GraderRequest(BaseModel):
     task_id: str
     state: Optional[Dict[str, Any]] = None
     episode_id: Optional[str] = None
-
 
 @app.post("/grader")
 def grader(req: GraderRequest):
@@ -81,17 +75,21 @@ def grader(req: GraderRequest):
         return {"error": f"Unknown task_id: {req.task_id}", "score": 0.001}
 
     raw = req.state or {}
-    if not raw:
-        raw = env.state()
+    if not raw or not raw.get("emails"):
+        raw = {
+            "emails": generate_emails(),
+            "actions": [],
+            "history": []
+        }
+
     if isinstance(raw, dict) and "history" in raw and "actions" not in raw:
         raw["actions"] = raw["history"]
+    elif isinstance(raw, dict) and "history" in raw:
+        raw["actions"] = raw.get("actions") or raw["history"]
 
     score = fn(raw if isinstance(raw, dict) else {})
-    
-    # Validate score is in valid range
-    if not (0 < score < 1):
-        score = max(0.001, min(0.999, float(score)))
-    
+    score = max(0.001, min(0.999, float(score)))
+
     return {"task_id": req.task_id, "score": float(score)}
 
 
