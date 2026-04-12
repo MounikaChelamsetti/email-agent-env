@@ -1,26 +1,18 @@
+spec_version: 1
 name: email-agent-env
-description: Elite email assistant simulation
-
-version: 0.1.0
-
-environment:
-  entry_point: main:app
+description: Elite email assistant simulation environment
+type: environment
+runtime: python
+app: server/app.py
+port: 7860
 
 tasks:
   - id: easy
-    description: Prioritize urgent emails
-    grader:
-      type: python
-      entry_point: env.grader:grade_easy
-
+    description: Handle a simple normal email
+    grader_fn: grade_easy
   - id: medium
-    description: Classify spam emails
-    grader:
-      type: python
-      entry_point: env.grader:grade_medium
-
+    description: Handle an urgent email correctly
+    grader_fn: grade_medium
   - id: hard
-    description: Handle mixed inbox
-    grader:
-      type: python
-      entry_point: env.grader:grade_hard
+    description: Handle spam detection and classification
+    grader_fn: grade_hard
