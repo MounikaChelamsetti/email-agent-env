@@ -1,4 +1,14 @@
 
+---
+title: Email Agent Environment
+emoji: 📧
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_file: main.py
+pinned: false
+---
+
 # 📧 Email Agent Environment (OpenEnv)
 
 A **real-world AI environment** for simulating email inbox management tasks such as prioritization, spam detection, and automated replies.
