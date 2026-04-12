@@ -144,5 +144,5 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except Exception as exc:
         print(f"[ERROR] inference failed: {exc}")
-        print("final_score: 0.001")
+        print("final_score: 0.01")
         raise SystemExit(0)

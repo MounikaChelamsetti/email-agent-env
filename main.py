@@ -72,7 +72,7 @@ def grader(req: GraderRequest):
     """Legacy grader endpoint for backward compatibility."""
     fn = GRADERS.get(req.task_id)
     if fn is None:
-        return {"error": f"Unknown task_id: {req.task_id}", "score": 0.001}
+        return {"error": f"Unknown task_id: {req.task_id}", "score": 0.01}
 
     raw = req.state or {}
     if not raw or not raw.get("emails"):
@@ -99,7 +99,7 @@ def grade_task(task_id: str, state: Dict[str, Any]):
     grader_fn = GRADERS.get(task_id)
     
     if grader_fn is None:
-        return {"error": f"Unknown task: {task_id}", "score": 0.001}
+        return {"error": f"Unknown task: {task_id}", "score": 0.01}
     
     # Convert history to actions if needed
     if isinstance(state, dict) and "history" in state and "actions" not in state:
