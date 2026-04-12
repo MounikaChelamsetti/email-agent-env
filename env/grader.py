@@ -2,90 +2,65 @@ from typing import Any, Dict, List
 
 
 def _clamp(score: float) -> float:
-    return max(0.001, min(0.999, float(score)))
+    # ensures strictly between (0,1)
+    return max(0.05, min(0.95, float(score)))
 
 
-# ✅ EASY
+# 🟢 EASY TASK
 def grade_easy(state: Dict[str, Any], trajectory: List[Dict[str, Any]]) -> float:
     try:
         actions = trajectory or state.get("history", [])
-        emails = state.get("emails", [])
+        if not actions:
+            return 0.2
 
-        urgent_ids = {e["id"] for e in emails if e.get("type") == "urgent"}
-        prioritized_ids = {
-            a.get("email_id")
-            for a in actions
-            if a.get("action_type") == "prioritize"
-        }
+        score = 0.3
 
-        if not urgent_ids:
-            return 0.6
+        if any(a.get("action_type") == "prioritize" for a in actions):
+            score += 0.4
 
-        ratio = len(urgent_ids & prioritized_ids) / len(urgent_ids)
-        return _clamp(0.1 + ratio * 0.8)
+        return _clamp(score)
 
     except Exception:
         return 0.2
 
 
-# ✅ MEDIUM
+# 🟡 MEDIUM TASK
 def grade_medium(state: Dict[str, Any], trajectory: List[Dict[str, Any]]) -> float:
     try:
         actions = trajectory or state.get("history", [])
-        emails = state.get("emails", [])
+        if not actions:
+            return 0.3
 
-        spam_ids = {e["id"] for e in emails if e.get("type") == "spam"}
-        classified_ids = {
-            a.get("email_id")
-            for a in actions
-            if a.get("action_type") == "classify"
-        }
+        score = 0.3
 
-        if not spam_ids:
-            return 0.6
+        if any(a.get("action_type") == "classify" for a in actions):
+            score += 0.4
 
-        ratio = len(spam_ids & classified_ids) / len(spam_ids)
-        return _clamp(0.1 + ratio * 0.8)
+        return _clamp(score)
 
     except Exception:
-        return 0.2
+        return 0.3
 
 
-# ✅ HARD
+# 🔴 HARD TASK
 def grade_hard(state: Dict[str, Any], trajectory: List[Dict[str, Any]]) -> float:
     try:
         actions = trajectory or state.get("history", [])
-        emails = state.get("emails", [])
+        if not actions:
+            return 0.4
 
-        urgent_ids = {e["id"] for e in emails if e.get("type") == "urgent"}
-        spam_ids = {e["id"] for e in emails if e.get("type") == "spam"}
-        normal_ids = {e["id"] for e in emails if e.get("type") == "normal"}
+        score = 0.3
 
-        prioritized = {
-            a.get("email_id")
-            for a in actions
-            if a.get("action_type") == "prioritize"
-        }
+        action_types = {a.get("action_type") for a in actions}
 
-        classified = {
-            a.get("email_id")
-            for a in actions
-            if a.get("action_type") == "classify"
-        }
+        if "prioritize" in action_types:
+            score += 0.2
+        if "classify" in action_types:
+            score += 0.2
+        if "reply" in action_types:
+            score += 0.2
 
-        replied = {
-            a.get("email_id")
-            for a in actions
-            if a.get("action_type") == "reply"
-        }
-
-        urgent_score = len(urgent_ids & prioritized) / len(urgent_ids) if urgent_ids else 0.5
-        spam_score = len(spam_ids & classified) / len(spam_ids) if spam_ids else 0.5
-        reply_score = len(normal_ids & replied) / len(normal_ids) if normal_ids else 0.5
-
-        final_score = 0.4 * urgent_score + 0.3 * spam_score + 0.3 * reply_score
-
-        return _clamp(final_score)
+        return _clamp(score)
 
     except Exception:
-        return 0.2
+        return 0.4
