@@ -9,7 +9,7 @@ tasks:
 
   - id: medium
     name: Spam Detection
-    description: Classify spam correctly.
+    description: Classify spam correctly without false positives.
     grader: env.grader:grade_medium
 
   - id: hard
