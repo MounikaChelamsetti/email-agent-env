@@ -9,13 +9,13 @@ port: 7860
 tasks:
   - id: easy
     description: Handle a simple normal email
-    grader: grade_easy
-    grader_fn: grade_easy
+    grader: env.grader:grade_easy
+    grader_fn: env.grader:grade_easy
   - id: medium
     description: Handle an urgent email correctly
-    grader: grade_medium
-    grader_fn: grade_medium
+    grader: env.grader:grade_medium
+    grader_fn: env.grader:grade_medium
   - id: hard
     description: Handle spam detection and classification
-    grader: grade_hard
-    grader_fn: grade_hard
+    grader: env.grader:grade_hard
+    grader_fn: env.grader:grade_hard

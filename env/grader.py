@@ -15,6 +15,12 @@ def _get_emails(state: Dict[str, Any]) -> List[Dict[str, Any]]:
     return [e for e in emails if isinstance(e, dict)]
 
 
+def _normalize_state(state: Any) -> Dict[str, Any]:
+    if isinstance(state, dict):
+        return state
+    return {}
+
+
 def grade(actions, trajectory=None):
     """Legacy function required by inference.py"""
     if not actions:
@@ -32,8 +38,9 @@ def grade(actions, trajectory=None):
     return _clamp(score)
 
 
-def grade_easy(state: Dict[str, Any]) -> float:
+def grade_easy(state: Dict[str, Any], trajectory=None) -> float:
     try:
+        state = _normalize_state(state)
         actions = _get_actions(state)
         emails = _get_emails(state)
 
@@ -55,8 +62,9 @@ def grade_easy(state: Dict[str, Any]) -> float:
         return _clamp(0.5)
 
 
-def grade_medium(state: Dict[str, Any]) -> float:
+def grade_medium(state: Dict[str, Any], trajectory=None) -> float:
     try:
+        state = _normalize_state(state)
         actions = _get_actions(state)
         emails = _get_emails(state)
 
@@ -85,8 +93,9 @@ def grade_medium(state: Dict[str, Any]) -> float:
         return _clamp(0.5)
 
 
-def grade_hard(state: Dict[str, Any]) -> float:
+def grade_hard(state: Dict[str, Any], trajectory=None) -> float:
     try:
+        state = _normalize_state(state)
         actions = _get_actions(state)
         emails = _get_emails(state)
 

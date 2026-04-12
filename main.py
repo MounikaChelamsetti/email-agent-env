@@ -41,22 +41,22 @@ def list_tasks():
             "id": "easy",
             "name": "Urgent Email Prioritization",
             "description": "Identify and prioritize the urgent email.",
-            "grader": "grade_easy",
-            "grader_fn": "grade_easy"
+            "grader": "env.grader:grade_easy",
+            "grader_fn": "env.grader:grade_easy"
         },
         {
             "id": "medium",
             "name": "Spam Detection",
             "description": "Classify spam correctly without false positives.",
-            "grader": "grade_medium",
-            "grader_fn": "grade_medium"
+            "grader": "env.grader:grade_medium",
+            "grader_fn": "env.grader:grade_medium"
         },
         {
             "id": "hard",
             "name": "Mixed Inbox Management",
             "description": "Prioritize urgent, classify spam, reply to normal.",
-            "grader": "grade_hard",
-            "grader_fn": "grade_hard"
+            "grader": "env.grader:grade_hard",
+            "grader_fn": "env.grader:grade_hard"
         },
     ]}
 
