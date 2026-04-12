@@ -9,16 +9,16 @@ port: 7860
 tasks:
   - id: easy
     name: Urgent Email Prioritization
-    description: Handle a simple normal email
+    description: Identify and prioritize the urgent email.
     grader: env.grader:grade_easy
     grader_fn: env.grader:grade_easy
   - id: medium
     name: Spam Detection
-    description: Handle an urgent email correctly
+    description: Classify spam correctly without false positives.
     grader: env.grader:grade_medium
     grader_fn: env.grader:grade_medium
   - id: hard
     name: Mixed Inbox Management
-    description: Handle spam detection and classification
+    description: Prioritize urgent, classify spam, reply to normal.
     grader: env.grader:grade_hard
     grader_fn: env.grader:grade_hard
