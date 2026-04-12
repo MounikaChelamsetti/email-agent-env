@@ -14,5 +14,5 @@ tasks:
 
   - id: hard
     name: Mixed Inbox Management
-    description: Prioritize urgent emails, classify spam, and reply to normal emails efficiently.
+    description: Prioritize urgent emails, classify spam, and reply to normal emails.
     grader: env.grader:grade_hard

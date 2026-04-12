@@ -6,7 +6,6 @@ def _clamp(score: float) -> float:
 
 
 def grade(actions: List[Dict[str, Any]]) -> float:
-    """Legacy grader used by inference.py."""
     if not actions:
         return 0.001
     action_types = {a.get("action_type") for a in actions}
