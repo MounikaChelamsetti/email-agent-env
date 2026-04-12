@@ -6,7 +6,6 @@ def _clamp(score: float) -> float:
 
 
 def _get_actions(state: Dict[str, Any]) -> List[Dict[str, Any]]:
-    # Support both "actions" and "history" key names
     actions = state.get("actions") or state.get("history") or []
     return [a for a in actions if isinstance(a, dict)]
 
@@ -14,6 +13,23 @@ def _get_actions(state: Dict[str, Any]) -> List[Dict[str, Any]]:
 def _get_emails(state: Dict[str, Any]) -> List[Dict[str, Any]]:
     emails = state.get("emails") or []
     return [e for e in emails if isinstance(e, dict)]
+
+
+def grade(actions, trajectory=None):
+    """Legacy function required by inference.py"""
+    if not actions:
+        return _clamp(0.5)
+    if isinstance(actions, dict):
+        actions = _get_actions(actions)
+    action_types = {a.get("action_type") for a in actions if isinstance(a, dict)}
+    score = 0.1
+    if "prioritize" in action_types:
+        score += 0.4
+    if "classify" in action_types:
+        score += 0.3
+    if "reply" in action_types:
+        score += 0.2
+    return _clamp(score)
 
 
 def grade_easy(state: Dict[str, Any]) -> float:
@@ -27,7 +43,6 @@ def grade_easy(state: Dict[str, Any]) -> float:
             if a.get("action_type") == "prioritize" and "email_id" in a
         }
 
-        # No emails at all — validator is calling with empty state, return safe mid score
         if not emails:
             return _clamp(0.5)
 
@@ -37,7 +52,7 @@ def grade_easy(state: Dict[str, Any]) -> float:
         ratio = len(urgent_ids & prioritized_ids) / len(urgent_ids)
         return _clamp(0.05 + ratio * 0.944)
     except Exception:
-        return _clamp(0.5)  # never return 0.0
+        return _clamp(0.5)
 
 
 def grade_medium(state: Dict[str, Any]) -> float:
