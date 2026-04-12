@@ -4,15 +4,15 @@ description: Elite email assistant simulation
 tasks:
   - id: easy
     name: Urgent Email Prioritization
-    description: Identify and prioritize the single urgent email in the inbox.
+    description: Identify and prioritize the urgent email.
     grader: env.grader:grade_easy
 
   - id: medium
     name: Spam Detection
-    description: Classify spam emails correctly without false positives.
+    description: Classify spam correctly.
     grader: env.grader:grade_medium
 
   - id: hard
     name: Mixed Inbox Management
-    description: Prioritize urgent emails, classify spam, and reply to normal emails.
+    description: Prioritize urgent, classify spam, reply to normal.
     grader: env.grader:grade_hard
