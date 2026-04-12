@@ -8,6 +8,7 @@ from env.grader import grade_easy, grade_medium, grade_hard
 app = FastAPI()
 env = EmailEnv()
 
+
 @app.get("/")
 def home():
     return {"message": "Running"}
@@ -22,20 +23,17 @@ def health():
 def reset():
     return env.reset()
 
+
 @app.get("/reset")
 def reset_get():
     return env.reset()
 
+
 @app.post("/step")
 def step(action: Action):
     state, reward, done, info = env.step(action)
+    return {"state": state, "reward": reward, "done": done, "info": info}
 
-    return {
-        "state": state,
-        "reward": reward,
-        "done": done,
-        "info": info
-    }
 
 @app.get("/state")
 def get_state():
@@ -45,12 +43,9 @@ def get_state():
 @app.get("/tasks")
 def list_tasks():
     return {"tasks": [
-        {"id": "easy", "name": "Urgent Email Prioritization",
-         "description": "Identify and prioritize the single urgent email."},
-        {"id": "medium", "name": "Spam Detection",
-         "description": "Classify spam emails correctly without false positives."},
-        {"id": "hard", "name": "Mixed Inbox Management",
-         "description": "Prioritize urgent, classify spam, reply to normal emails."},
+        {"id": "easy", "name": "Urgent Email Prioritization", "description": "Identify and prioritize the urgent email."},
+        {"id": "medium", "name": "Spam Detection", "description": "Classify spam correctly without false positives."},
+        {"id": "hard", "name": "Mixed Inbox Management", "description": "Prioritize urgent, classify spam, reply to normal."},
     ]}
 
 
