@@ -1,66 +1,61 @@
-from typing import Any, Dict, List
+def grade_easy(state, trajectory):
+    """Grade easy task: handling a normal email."""
+    score = 0.5  # base score
+
+    history = getattr(state, "history", []) or []
+    emails = getattr(state, "emails", []) or []
+
+    if not history:
+        return 0.1  # agent did nothing — low but not zero
+
+    # Reward for acting on normal emails
+    actions_taken = len(history)
+    score += min(0.3, actions_taken * 0.1)
+
+    # Check if normal emails were handled
+    normal_emails = [e for e in emails if getattr(e, "type", None) == "normal"]
+    if normal_emails:
+        score += 0.1
+
+    return max(0.001, min(0.999, score))
 
 
-def _clamp(score: float) -> float:
-    # ensures strictly between (0,1)
-    return max(0.05, min(0.95, float(score)))
+def grade_medium(state, trajectory):
+    """Grade medium task: handling urgent emails correctly."""
+    score = 0.4
+
+    history = getattr(state, "history", []) or []
+    emails = getattr(state, "emails", []) or []
+
+    if not history:
+        return 0.15
+
+    urgent_emails = [e for e in emails if getattr(e, "type", None) == "urgent"]
+    if urgent_emails and len(history) >= len(urgent_emails):
+        score += 0.35
+
+    actions_taken = len(history)
+    score += min(0.2, actions_taken * 0.05)
+
+    return max(0.001, min(0.999, score))
 
 
-# 🟢 EASY TASK
-def grade_easy(state: Dict[str, Any], trajectory: List[Dict[str, Any]]) -> float:
-    try:
-        actions = trajectory or state.get("history", [])
-        if not actions:
-            return 0.2
+def grade_hard(state, trajectory):
+    """Grade hard task: spam detection and classification."""
+    score = 0.3
 
-        score = 0.3
+    history = getattr(state, "history", []) or []
+    emails = getattr(state, "emails", []) or []
 
-        if any(a.get("action_type") == "prioritize" for a in actions):
-            score += 0.4
-
-        return _clamp(score)
-
-    except Exception:
+    if not history:
         return 0.2
 
+    spam_emails = [e for e in emails if getattr(e, "type", None) == "spam"]
+    if spam_emails and len(history) > 0:
+        score += 0.4
 
-# 🟡 MEDIUM TASK
-def grade_medium(state: Dict[str, Any], trajectory: List[Dict[str, Any]]) -> float:
-    try:
-        actions = trajectory or state.get("history", [])
-        if not actions:
-            return 0.3
+    # Bonus for multi-step handling
+    if len(history) >= 3:
+        score += 0.2
 
-        score = 0.3
-
-        if any(a.get("action_type") == "classify" for a in actions):
-            score += 0.4
-
-        return _clamp(score)
-
-    except Exception:
-        return 0.3
-
-
-# 🔴 HARD TASK
-def grade_hard(state: Dict[str, Any], trajectory: List[Dict[str, Any]]) -> float:
-    try:
-        actions = trajectory or state.get("history", [])
-        if not actions:
-            return 0.4
-
-        score = 0.3
-
-        action_types = {a.get("action_type") for a in actions}
-
-        if "prioritize" in action_types:
-            score += 0.2
-        if "classify" in action_types:
-            score += 0.2
-        if "reply" in action_types:
-            score += 0.2
-
-        return _clamp(score)
-
-    except Exception:
-        return 0.4
+    return max(0.001, min(0.999, score))
